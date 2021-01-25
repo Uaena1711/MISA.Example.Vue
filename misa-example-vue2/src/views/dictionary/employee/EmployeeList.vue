@@ -11,7 +11,10 @@
           <div class="m-btn-icon icon-add"></div>
           <div class="btn-text">Thêm nhân viên</div>
         </button>
-        <Details/>
+        <Details v-on:canclePostForm="cancleForm"
+                 v-on:save-employee="save"
+         :isHide='this.ishideParent'
+          />
       </div>
     </div>
     <div class="filter-bar">
@@ -175,8 +178,8 @@
         <tbody>
           <tr
             class="el-table__row"
-            v-for="employee in employees"
-            :key="employee.EmployeeId"
+            v-for="(employee, index) in employees"
+            :key="index"
             @dblclick="rowOnClick(employee)"
           >
             <td>
@@ -242,31 +245,42 @@ export default {
   },
   methods: {
     btnAddOnClick() {
-      alert(1);
+      this.ishideParent = false;
+    
     },
     rowOnClick(employee){
       alert(employee.FullName);
+    },
+    cancleForm(value){
+      this.ishideParent = value;
+      console.log(this.ishideParent)
+    },
+    async save(value){
+      await axios.post('http://api.manhnv.net/api/employees', value);
+      this.employees.push(value);
     }
   },
+
   data() {
     return {
+      ishideParent: Boolean,
       selectedEmployee: {
         EmployeeId: 1,
         FullName: "Nguyễn Văn Mạnh",
       },
       employees: [
-        {
-          EmployeeId: 1,
-          FullName: "Nguyễn Văn Mạnh",
-        },
-        {
-          EmployeeId: 1,
-          FullName: "Nguyễn Văn Mạnh",
-        },
-        {
-          EmployeeId: 1,
-          FullName: "Nguyễn Văn Mạnh",
-        },
+        // {
+        //   EmployeeId: 1,
+        //   FullName: "Nguyễn Văn Mạnh",
+        // },
+        // {
+        //   EmployeeId: 1,
+        //   FullName: "Nguyễn Văn Mạnh",
+        // },
+        // {
+        //   EmployeeId: 1,
+        //   FullName: "Nguyễn Văn Mạnh",
+        // },
       ],
       headers: [
         {

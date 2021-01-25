@@ -42,6 +42,7 @@
                       required
                       class="input-required"
                       type="text"
+                      v-model="employee.EmployeeCode"
                     />
                   </div>
                 </div>
@@ -56,6 +57,7 @@
                       class="input-required"
                       type="text"
                       required
+                      v-model="employee.FullName"
                     />
                   </div>
                 </div>
@@ -67,12 +69,13 @@
                     class="m-combobox-input"
                     type="date"
                     autocomplete="off"
+                    v-model="employee.DateOfBirth"
                   />
                 </div>
                 <div class="m-flex-1 mg-left-10px">
                   <div class="m-label">Giới tính</div>
-                  <select id="cbxGender" class="m-control">
-                    <option value="1">Nam</option>
+                  <select id="cbxGender" class="m-control" v-model="employee.Gender" >
+                    <option value="1">Nam</option >
                     <option value="0">Nữ</option>
                   </select>
                 </div>
@@ -91,6 +94,7 @@
                       fieldName="text"
                       type="text"
                       required
+                      v-model="employee.IdentityNumber"
                     />
                   </div>
                 </div>
@@ -100,6 +104,7 @@
                     class="m-combobox-input"
                     type="date"
                     autocomplete="off"
+                    v-model="employee.IdentityDate"
                   />
                 </div>
               </div>
@@ -112,6 +117,7 @@
                       fieldName="PhoneNumber"
                       class="input-required"
                       type="text"
+                      v-model="employee.IdentityPlace"
                     />
                   </div>
                 </div>
@@ -128,7 +134,7 @@
                       fieldName="Email"
                       type="email"
                       required
-                      placeholder="example@domain.com"
+                      v-model="employee.Email"
                     />
                   </div>
                 </div>
@@ -143,6 +149,7 @@
                       class="input-required"
                       type="text"
                       required
+                      v-model="employee.PhoneNumber"
                     />
                   </div>
                 </div>
@@ -160,6 +167,7 @@
                     fieldValue="CustomerGroupId"
                     api="/api/customergroups"
                     class="m-control"
+                    v-model="employee.PositionId"
                   >
                     <option value="19165ed7-212e-21c4-0428-030d4265475f">
                       Giám đốc
@@ -177,6 +185,7 @@
                     fieldValue="CustomerGroupId"
                     api="/api/customergroups"
                     class="m-control"
+                    v-model="employee.DepartmentId"
                   >
                     <option value="19165ed7-212e-21c4-0428-030d4265475f">
                       Phòng nhân sự
@@ -191,7 +200,7 @@
                 <div class="m-flex-1">
                   <div class="m-label">Mã số thuế cá nhân</div>
                   <div class="m-control">
-                    <input id="txtAddress" fieldName="Address" type="text" />
+                    <input id="txtAddress" fieldName="Address" type="text" v-model="employee.PersonalTaxCode" />
                   </div>
                 </div>
                 <div class="m-flex-1 mg-left-10px">
@@ -202,6 +211,7 @@
                       fieldName="Salary"
                       type="text"
                       style="text-align: right; padding-right: 56px"
+                      v-model="employee.Salary"
                     /><span class="currency-for-input">(VNĐ)</span>
                   </div>
                 </div>
@@ -213,6 +223,7 @@
                     class="m-combobox-input"
                     type="date"
                     autocomplete="off"
+                    v-model="employee.JoinDate"
                   />
                 </div>
                 <div class="m-flex-1 mg-left-10px">
@@ -223,14 +234,15 @@
                     fieldValue="CustomerGroupId"
                     api="/api/customergroups"
                     class="m-control"
+                    v-model="employee.WorkStatus"
                   >
-                    <option value="19165ed7-212e-21c4-0428-030d4265475f">
+                    <option value="0">
                       Đang làm việc
                     </option>
-                    <option value="19165ed7-212e-21c4-0428-030d4265475f">
+                    <option value="1">
                       Đang thử việc
                     </option>
-                    <option value="19165ed7-212e-21c4-0428-030d4265475f">
+                    <option value="2">
                       Nghỉ việc
                     </option>
                   </select>
@@ -243,8 +255,8 @@
           <button id="btnCancel" class="m-btn m-btn-default m-btn-cancel" v-on:click="btnCancelOnClick">
             Hủy
           </button>
-          <button id="btnSave" class="m-btn m-btn-default">
-            <i class="far fa-save"></i><span class="btn-text">Lưu</span>
+          <button id="btnSave" class="m-btn m-btn-default" v-on:click="btnSave" >
+            <span class="btn-text">Lưu</span>
           </button>
         </div>
       </div>
@@ -253,22 +265,57 @@
 </template>
 <script>
 export default {
+  props: ['isHide'],
+
   methods: {
     btnAddOnClick() {
       this.isHide = false;
     },
     btnCancelOnClick() {
-      this.isHide = true;
+      this.$emit('canclePostForm',true);
+      
     },
     rowOnClick(employee) {
       alert(employee.FullName);
     },
+    btnSave(){
+      this.$emit("save-employee", this.employee )
+    }
   },
   data() {
     return {
       dialog: false,
-      isHide: true,
       display: "none",
+
+      employee: {
+      EmployeeId: "156bb711-53c6-12ee-5d80-7ed9d1ea06ea",
+      EmployeeCode: null,
+      FirstName:null,
+      LastName: null,
+      FullName:null,
+      Gender: null,
+      DateOfBirth: null,
+      PhoneNumber: null,
+      Email: null,
+      Address: "319 Prospect Hill Blvd, Keith Bldg, Boise, Idaho, 76994",
+      IdentityNumber:null,
+      IdentityDate: null,
+      IdentityPlace: null,
+      JoinDate:null,
+      MaritalStatus: 0,
+      PersonalTaxCode: null,
+      Salary: null,
+      EducationalBackground:0,
+      WorkStatus: null,
+      PositionId: null,
+      PositionName: "Thu ngân",
+      DepartmentId:null,
+      DepartmentName:"Phòng Marketting",
+      QualificationId: null,
+      QualificationName: null,
+      GenderName: "Nam",
+      WorkStatusName: "Đang thử việc",
+      }
     };
   },
 };
