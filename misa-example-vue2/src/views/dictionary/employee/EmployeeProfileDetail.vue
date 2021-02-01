@@ -7,7 +7,7 @@
     <div
       class="m-dialog dialog-detail"
       title="Thông tin nhân viên"
-      :class="{ isHide: isHide }"
+      
     >
       <div class="dialog-modal"></div>
       <div class="dialog-content">
@@ -42,7 +42,7 @@
                       required
                       class="input-required"
                       type="text"
-                      v-model="employee.EmployeeCode"
+                      v-model="employee.employeeCode"
                     />
                   </div>
                 </div>
@@ -57,7 +57,7 @@
                       class="input-required"
                       type="text"
                       required
-                      v-model="employee.FullName"
+                      v-model="employee.fullName"
                     />
                   </div>
                 </div>
@@ -69,12 +69,12 @@
                     class="m-combobox-input"
                     type="date"
                     autocomplete="off"
-                    v-model="employee.DateOfBirth"
+                    v-model="employee.dateOfBirth"
                   />
                 </div>
                 <div class="m-flex-1 mg-left-10px">
                   <div class="m-label">Giới tính</div>
-                  <select id="cbxGender" class="m-control" v-model="employee.Gender" >
+                  <select id="cbxGender" class="m-control" v-model="employee.gender" >
                     <option value="1">Nam</option >
                     <option value="0">Nữ</option>
                   </select>
@@ -92,9 +92,9 @@
                     <input
                       id="txtIdentityNumber"
                       fieldName="text"
-                      type="text"
+                      type="number"
                       required
-                      v-model="employee.IdentityNumber"
+                      v-model="employee.identityNumber"
                     />
                   </div>
                 </div>
@@ -104,7 +104,7 @@
                     class="m-combobox-input"
                     type="date"
                     autocomplete="off"
-                    v-model="employee.IdentityDate"
+                    v-model="employee.identityDate"
                   />
                 </div>
               </div>
@@ -117,7 +117,7 @@
                       fieldName="PhoneNumber"
                       class="input-required"
                       type="text"
-                      v-model="employee.IdentityPlace"
+                      v-model="employee.identityPlace"
                     />
                   </div>
                 </div>
@@ -134,7 +134,7 @@
                       fieldName="Email"
                       type="email"
                       required
-                      v-model="employee.Email"
+                      v-model="employee.email"
                     />
                   </div>
                 </div>
@@ -147,9 +147,9 @@
                       id="txtPhoneNumber"
                       fieldName="FullName"
                       class="input-required"
-                      type="text"
+                      type="number"
                       required
-                      v-model="employee.PhoneNumber"
+                      v-model="employee.phoneNumber"
                     />
                   </div>
                 </div>
@@ -167,12 +167,12 @@
                     fieldValue="CustomerGroupId"
                     api="/api/customergroups"
                     class="m-control"
-                    v-model="employee.PositionId"
+                    v-model="employee.positionId"
                   >
-                    <option value="19165ed7-212e-21c4-0428-030d4265475f">
+                    <option value="1">
                       Giám đốc
                     </option>
-                    <option value="19165ed7-212e-21c4-0428-030d4265475f">
+                    <option value="2">
                       Nhân viên
                     </option>
                   </select>
@@ -185,12 +185,12 @@
                     fieldValue="CustomerGroupId"
                     api="/api/customergroups"
                     class="m-control"
-                    v-model="employee.DepartmentId"
+                    v-model="employee.departmentId"
                   >
-                    <option value="19165ed7-212e-21c4-0428-030d4265475f">
+                    <option value="1">
                       Phòng nhân sự
                     </option>
-                    <option value="19165ed7-212e-21c4-0428-030d4265475f">
+                    <option value="2">
                       Phòng đào tạo
                     </option>
                   </select>
@@ -200,7 +200,7 @@
                 <div class="m-flex-1">
                   <div class="m-label">Mã số thuế cá nhân</div>
                   <div class="m-control">
-                    <input id="txtAddress" fieldName="Address" type="text" v-model="employee.PersonalTaxCode" />
+                    <input id="txtAddress" fieldName="Address" type="number" v-model="employee.personalTaxCode" />
                   </div>
                 </div>
                 <div class="m-flex-1 mg-left-10px">
@@ -211,7 +211,7 @@
                       fieldName="Salary"
                       type="text"
                       style="text-align: right; padding-right: 56px"
-                      v-model="employee.Salary"
+                      v-model="employee.salary"
                     /><span class="currency-for-input">(VNĐ)</span>
                   </div>
                 </div>
@@ -223,7 +223,7 @@
                     class="m-combobox-input"
                     type="date"
                     autocomplete="off"
-                    v-model="employee.JoinDate"
+                    v-model="employee.joinDate"
                   />
                 </div>
                 <div class="m-flex-1 mg-left-10px">
@@ -234,7 +234,7 @@
                     fieldValue="CustomerGroupId"
                     api="/api/customergroups"
                     class="m-control"
-                    v-model="employee.WorkStatus"
+                    v-model="employee.workStatus"
                   >
                     <option value="0">
                       Đang làm việc
@@ -265,7 +265,7 @@
 </template>
 <script>
 export default {
-  props: ['isHide'],
+  props: ['isHide', 'employee1', 'isCreate'],
 
   methods: {
     btnAddOnClick() {
@@ -273,48 +273,58 @@ export default {
     },
     btnCancelOnClick() {
       this.$emit('canclePostForm',true);
+    
       
     },
     rowOnClick(employee) {
-      alert(employee.FullName);
+      alert(employee.fullName);
     },
     btnSave(){
+      
+      if(this.employee.id == null){
+        this.$emit('Create-event',true )
+      }
+      else {
+         this.$emit('Create-event',false )
+      }
       this.$emit("save-employee", this.employee )
     }
   },
+
+  mounted(){
+    if(this.employee1 !== null) {
+       this.employee = {...this.employee1};
+    }
+
+    
+  },
+
   data() {
     return {
       dialog: false,
       display: "none",
 
       employee: {
-      EmployeeId: "156bb711-53c6-12ee-5d80-7ed9d1ea06ea",
-      EmployeeCode: null,
-      FirstName:null,
-      LastName: null,
-      FullName:null,
-      Gender: null,
-      DateOfBirth: null,
-      PhoneNumber: null,
-      Email: null,
-      Address: "319 Prospect Hill Blvd, Keith Bldg, Boise, Idaho, 76994",
-      IdentityNumber:null,
-      IdentityDate: null,
-      IdentityPlace: null,
-      JoinDate:null,
-      MaritalStatus: 0,
-      PersonalTaxCode: null,
-      Salary: null,
-      EducationalBackground:0,
-      WorkStatus: null,
-      PositionId: null,
-      PositionName: "Thu ngân",
-      DepartmentId:null,
-      DepartmentName:"Phòng Marketting",
-      QualificationId: null,
-      QualificationName: null,
-      GenderName: "Nam",
-      WorkStatusName: "Đang thử việc",
+        id: null,
+        employeeCode: "NV-11111",
+        fullName: "nguyen van a",
+        gender: 1,
+        dateOfBirth: null,
+        phoneNumber: 5435346,
+        email: "exmaple@gmail.com",
+        address: "on earth",
+        identityNumber: 4554356,
+        identityPlace: "on earth",
+        identityDate: null,
+        joinDate: null,
+        personalTaxCode: 0,
+        salary: 0,
+        workStatus: 0,
+        positionId: 0,
+        departmentId: 0,
+        createdTime: null,
+        updatedTime: null,
+        isDeleted: false
       }
     };
   },

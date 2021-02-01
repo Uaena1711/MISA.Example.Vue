@@ -11,9 +11,14 @@
           <div class="m-btn-icon icon-add"></div>
           <div class="btn-text">Thêm nhân viên</div>
         </button>
-        <Details v-on:canclePostForm="cancleForm"
-                 v-on:save-employee="save"
+        <Details
+        v-if="!ishideParent"
+         v-on:canclePostForm="cancleForm"
+         v-on:Create-event="updateArray"
+         v-on:save-employee="save"
+        
          :isHide='this.ishideParent'
+         :employee1='this.selectedEmployee'
           />
       </div>
     </div>
@@ -178,59 +183,50 @@
         <tbody>
           <tr
             class="el-table__row"
-            v-for="(employee, index) in employees"
+            v-for="(employee, index) in pageEmployee"
             :key="index"
             @dblclick="rowOnClick(employee)"
           >
             <td>
-              <div class="cell">{{ employee.EmployeeCode }}</div>
+              <div class="cell">{{ employee.employeeCode }}</div>
             </td>
             <td>
-              <div class="cell">{{ employee.FullName }}</div>
+              <div class="cell">{{ employee.fullName }}</div>
             </td>
             <td>
-              <div class="cell">{{ employee.GenderName }}</div>
+              <div class="cell">{{ employee.gender }}</div>
             </td>
             <td>
-              <div class="cell">{{ employee.DateOfBirth }}</div>
+              <div class="cell">{{ employee.dateOfBirth | formatDate }}</div>
             </td>
             <td>
-              <div class="cell">{{ employee.PhoneNumber }}</div>
+              <div class="cell">{{ employee.phoneNumber }}</div>
             </td>
             <td>
-              <div class="cell">{{ employee.Email }}</div>
+              <div class="cell">{{ employee.email }}</div>
             </td>
             <td>
-              <div class="cell">{{ employee.PositionName }}</div>
+              <div class="cell">{{ employee.positionId }}</div>
             </td>
             <td>
-              <div class="cell">{{ employee.DepartmentName }}</div>
+              <div class="cell">{{ employee.departmentId }}</div>
             </td>
             <td>
-              <div class="cell">{{ employee.Salary }}</div>
+              <div class="cell">{{ employee.salary }}</div>
             </td>
             <td>
-              <div class="cell">{{ employee.WorkStatusName }}</div>
+              <div class="cell">{{ employee.workStatus }}</div>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
     <div class="paging-bar">
-      <div class="paging-record-info">Hiển thị <b>1-10/1000</b> nhân viên</div>
-      <div class="paging-option">
-        <div class="btn-select-page m-btn-firstpage"></div>
-        <div class="btn-select-page m-btn-prev-page"></div>
-        <div class="m-btn-list-page">
-          <button class="btn-pagenumber btn-pagenumber-selected">1</button>
-          <button class="btn-pagenumber">2</button>
-          <button class="btn-pagenumber">3</button>
-          <button class="btn-pagenumber">4</button>
-        </div>
-        <div class="btn-select-page m-btn-next-page"></div>
-        <div class="btn-select-page m-btn-lastpage"></div>
-      </div>
-      <div class="paging-record-option"><b>10</b> nhân viên/trang</div>
+      <jw-pagination
+        :items="employees"
+        @changePage="onChangePage"
+        :labels="customLabels"
+      ></jw-pagination>
     </div>
     
   </div>
@@ -238,36 +234,67 @@
 <script>
 import * as axios from "axios";
 import Details from "./EmployeeProfileDetail";
+
+const customLabels = {
+    first: '<<',
+    last: '>>',
+    previous: '<',
+    next: '>'
+};
+
 export default {
   name: "Employees",
+
   components: {
-    Details,
+ 
+    Details
   },
   methods: {
     btnAddOnClick() {
       this.ishideParent = false;
     
     },
+     onChangePage(xxx) {
+      // update page of items
+      this.pageEmployee = xxx;
+    },
     rowOnClick(employee){
-      alert(employee.FullName);
+      this.selectedEmployee = employee;
+      this.ishideParent = false;
+      console.log(this.selectedEmployee)
     },
     cancleForm(value){
       this.ishideParent = value;
-      console.log(this.ishideParent)
     },
     async save(value){
-      await axios.post('http://api.manhnv.net/api/employees', value);
-      this.employees.push(value);
+      await axios.post('https://localhost:44397/Employee/CreateOrUpdate', value);
+      if(this.isCreate == true){
+           this.employees.push(value);
+      }
+      else {
+        for(let i = 0; i< this.employees.length; i++){
+          if(this.employees[i].id == value.id){
+            this.employees[i] = value;
+          }
+        }
+      }
+    
+    },
+    updateArray(isCreate){
+      this.isCreate = isCreate;
     }
   },
+
+  
 
   data() {
     return {
       ishideParent: Boolean,
+      isCreate: Boolean,
       selectedEmployee: {
-        EmployeeId: 1,
-        FullName: "Nguyễn Văn Mạnh",
+      
       },
+      customLabels,
       employees: [
         // {
         //   EmployeeId: 1,
@@ -282,6 +309,8 @@ export default {
         //   FullName: "Nguyễn Văn Mạnh",
         // },
       ],
+      pageEmployee:[],
+
       headers: [
         {
           text: "Mã nhân viên",
@@ -385,7 +414,9 @@ export default {
     };
   },
   async created() {
-    const response = await axios.get("http://api.manhnv.net/api/employees");
+    const response = await axios.get("https://localhost:44397/Employee").catch((e) => console.log(e)
+
+    )
     this.employees = response.data;
   },
 };

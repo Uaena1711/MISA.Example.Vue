@@ -3,6 +3,8 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Customer from '../views/dictionary/customer/CustomerList.vue'
 import Employee from '../views/dictionary/employee/EmployeeList.vue'
+import JwPagination from 'jw-vue-pagination';
+Vue.component('jw-pagination', JwPagination);
 
 Vue.use(VueRouter)
 
